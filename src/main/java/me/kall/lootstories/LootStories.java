@@ -2,8 +2,6 @@ package me.kall.lootstories;
 
 import me.kall.lootstories.config.IConfig;
 import me.kall.lootstories.config.StoryConfig;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -29,15 +27,19 @@ public final class LootStories {
     public static final String MOD_ID = "lootstories";
     public static final String MOD_NAME = "LootStories";
     public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
-    public static final List<StoryEntry> STORIES = loadStories();
+    public static final List<Story> STORIES = loadStories();
     public static final @Nullable IConfig CONFIG = FMLLoader.getLoadingModList().getModFileById("jsonate") == null ? null : new StoryConfig();
 
     public static boolean mayGen() {
         return ThreadLocalRandom.current().nextInt(100) <= (CONFIG == null ? 60 : CONFIG.possibility());
     }
 
-    private static @NotNull List<StoryEntry> loadStories() {
-        List<StoryEntry> stories = new ArrayList<>();
+    public static Story randomStory() {
+        return STORIES.get(ThreadLocalRandom.current().nextInt(STORIES.size()));
+    }
+
+    private static @NotNull List<Story> loadStories() {
+        List<Story> stories = new ArrayList<>();
         Path configDir = FMLPaths.GAMEDIR.get().resolve("config").resolve(MOD_ID);
 
         try {
@@ -70,10 +72,7 @@ public final class LootStories {
             try (var files = Files.list(configDir)) {
                 files.filter(f -> f.toString().endsWith(".txt")).forEach(file -> {
                     try {
-                        String content = Files.readString(file, StandardCharsets.UTF_8);
-                        String filename = file.getFileName().toString();
-                        String author = parseAuthorFromFilename(filename);
-                        stories.add(new StoryEntry(content, author));
+                        stories.add(new Story(parse(file.getFileName().toString()), Files.readString(file, StandardCharsets.UTF_8)));
                     } catch (Exception e) {
                         LOGGER.warn("Reading failed: {}", file, e);
                     }
@@ -87,33 +86,23 @@ public final class LootStories {
         return stories;
     }
 
-    private static @NotNull String parseAuthorFromFilename(String filename) {
-        if (filename == null) return "";
+    private static @NotNull LootStories.Info parse(@Nullable String filename) {
+        if (filename == null) return new Info("", "");
+
         int dot = filename.lastIndexOf('.');
         String nameWithoutExt = dot > 0 ? filename.substring(0, dot) : filename;
+
         int byIndex = nameWithoutExt.lastIndexOf("by");
-        if (byIndex >= 0 && byIndex + 2 < nameWithoutExt.length()) {
-            String possibleAuthor = nameWithoutExt.substring(byIndex + 2).trim();
-            if (!possibleAuthor.isEmpty()) {
-                return possibleAuthor;
-            }
-        }
-        return "";
-    }
-
-    public static @NotNull ListTag createPagesFromStory(@NotNull String story) {
-        ListTag pages = new ListTag();
-        int pageLength = 128;
-        int start = 0;
-
-        while (start < story.length()) {
-            int end = Math.min(start + pageLength, story.length());
-            pages.add(StringTag.valueOf(story.substring(start, end)));
-            start = end;
+        if (byIndex > 0) {
+            String title = nameWithoutExt.substring(0, byIndex).trim();
+            String author = nameWithoutExt.substring(byIndex + 2).trim();
+            if (author.isEmpty()) author = "unknown";
+            return new Info(title, author);
         }
 
-        return pages;
+        return new Info(nameWithoutExt, "unknown");
     }
 
-    public record StoryEntry(String content, String author) {}
+    public record Info(String title, String author) {}
+    public record Story(Info info, String content) {}
 }

@@ -1,11 +1,12 @@
 package me.kall.lootstories.mixin;
 
 import me.kall.lootstories.LootStories;
-import me.kall.lootstories.LootStories.StoryEntry;
+import me.kall.lootstories.LootStories.Story;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -16,11 +17,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 @Mixin(RandomizableContainerBlockEntity.class)
 public abstract class RandomizableContainerBlockEntityMixin extends BaseContainerBlockEntity {
@@ -35,29 +35,7 @@ public abstract class RandomizableContainerBlockEntityMixin extends BaseContaine
     private void onLoadLoots(Player player, CallbackInfo ci) {
         if (LootStories.mayGen() && !LootStories.STORIES.isEmpty()) {
             ItemStack stack = Items.WRITTEN_BOOK.getDefaultInstance();
-
-            CompoundTag bookTag = new CompoundTag();
-
-            int idx = ThreadLocalRandom.current().nextInt(LootStories.STORIES.size());
-            StoryEntry entry = LootStories.STORIES.get(idx);
-            String story = entry.content();
-            ListTag pages = LootStories.createPagesFromStory(story);
-            bookTag.put("pages", pages);
-
-            String title = story.contains("\n") ? story.substring(0, story.indexOf('\n')) : story;
-            bookTag.putString("title", title);
-
-            String authorFromFile = entry.author();
-            if (authorFromFile == null || authorFromFile.isEmpty()) {
-                bookTag.putString("author", "unknown");
-            } else {
-                bookTag.putString("author", authorFromFile);
-            }
-
-            bookTag.putBoolean("resolved", true);
-
-            stack.setTag(bookTag);
-
+            stack.setTag(story$fillBook());
             for (int i = 0; i < this.getItems().size(); i++) {
                 if (this.getItem(i).isEmpty()) {
                     this.setItem(i, stack);
@@ -65,5 +43,37 @@ public abstract class RandomizableContainerBlockEntityMixin extends BaseContaine
                 }
             }
         }
+    }
+
+    @Unique
+    private static @NotNull CompoundTag story$fillBook() {
+        CompoundTag bookTag = new CompoundTag();
+
+        Story story = LootStories.randomStory();
+        ListTag pages = story$createPages(story.content());
+        bookTag.put("pages", pages);
+
+        LootStories.Info info = story.info();
+        bookTag.putString("title", info.title());
+        String author = (info.author() == null || info.author().isEmpty()) ? "unknown" : info.author();
+        bookTag.putString("author", author);
+
+        bookTag.putBoolean("resolved", true);
+        return bookTag;
+    }
+
+    @Unique
+    private static @NotNull ListTag story$createPages(@NotNull String story) {
+        ListTag pages = new ListTag();
+        int pageLength = 128;
+        int start = 0;
+
+        while (start < story.length()) {
+            int end = Math.min(start + pageLength, story.length());
+            pages.add(StringTag.valueOf(story.substring(start, end)));
+            start = end;
+        }
+
+        return pages;
     }
 }
