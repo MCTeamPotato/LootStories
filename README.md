@@ -13,7 +13,3 @@ Each file name should follow the format:
 If you have the **Jsonate** installed, you can configure the loot generation chance for these books. It's not a hard requirement, though.
 
 **Modern UI** is required for this mod, or the texts will be pieces of shit.
-
-### ToDo
-- Better localization support
-- Written book text and line formatting improvements
