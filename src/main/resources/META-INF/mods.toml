@@ -1,0 +1,21 @@
+modLoader = "javafml"
+loaderVersion = "[36,)"
+#issueTrackerURL = ""
+license = "MIT"
+
+[[mods]]
+modId = "lootstories"
+version = "${version}"
+displayName = "LootStories"
+authors = "Kall"
+description = '''
+'''
+#logoFile = ""
+
+[[dependencies.lootstories]]
+modId="modernui"
+type="required"
+mandatory=true
+versionRange="[3.11.1.6,)"
+ordering="NONE"
+side="CLIENT"
