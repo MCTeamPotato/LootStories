@@ -1,5 +1,6 @@
 package me.kall.lootstories;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import me.kall.lootstories.config.IConfig;
 import me.kall.lootstories.config.StoryConfig;
 import net.minecraftforge.fml.common.Mod;
@@ -11,14 +12,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -39,37 +41,13 @@ public final class LootStories {
     }
 
     private static @NotNull List<Story> loadStories() {
-        List<Story> stories = new ArrayList<>();
+        List<Story> stories = new ObjectArrayList<>();
         Path configDir = FMLPaths.GAMEDIR.get().resolve("config").resolve(MOD_ID);
 
         try {
-            if (!Files.exists(configDir)) {
-                Files.createDirectories(configDir);
+            if (!Files.exists(configDir)) extract(configDir);
 
-                File modFile = FMLLoader.getLoadingModList().getModFileById(MOD_ID).getFile().getFilePath().toFile();
-                if (modFile.exists() && modFile.isFile()) {
-                    try (ZipFile zip = new ZipFile(modFile)) {
-                        Enumeration<? extends ZipEntry> entries = zip.entries();
-                        while (entries.hasMoreElements()) {
-                            ZipEntry entry = entries.nextElement();
-                            String entryName = entry.getName();
-
-                            if (entryName.startsWith("assets/lootstories/stories/") && entryName.endsWith(".txt")) {
-                                Path targetFile = configDir.resolve(Path.of(entryName).getFileName());
-                                try (InputStream in = zip.getInputStream(entry)) {
-                                    Files.copy(in, targetFile);
-                                } catch (Exception e) {
-                                    LOGGER.warn("Failed to extract story {}: {}", entryName, e.getMessage());
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        LOGGER.warn("Failed to open mod jar for story extraction", e);
-                    }
-                }
-            }
-
-            try (var files = Files.list(configDir)) {
+            try (Stream<Path> files = Files.list(configDir)) {
                 files.filter(f -> f.toString().endsWith(".txt")).forEach(file -> {
                     try {
                         stories.add(new Story(parse(file.getFileName().toString()), Files.readString(file, StandardCharsets.UTF_8)));
@@ -84,6 +62,29 @@ public final class LootStories {
         }
 
         return stories;
+    }
+
+    private static void extract(Path configDir) throws IOException {
+        Files.createDirectories(configDir);
+        File modFile = FMLLoader.getLoadingModList().getModFileById(MOD_ID).getFile().getFilePath().toFile();
+        if (!modFile.exists() || !modFile.isFile()) return;
+        try (ZipFile zip = new ZipFile(modFile)) {
+            Enumeration<? extends ZipEntry> entries = zip.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                String entryName = entry.getName();
+                if (!entryName.startsWith("assets/lootstories/stories/")) continue;
+                if (!entryName.endsWith(".txt")) continue;
+                Path targetFile = configDir.resolve(Path.of(entryName).getFileName());
+                try (InputStream in = zip.getInputStream(entry)) {
+                    Files.copy(in, targetFile);
+                } catch (Exception e) {
+                    LOGGER.warn("Failed to extract story {}: {}", entryName, e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Failed to open mod jar for story extraction", e);
+        }
     }
 
     private static @NotNull LootStories.Info parse(@Nullable String filename) {
