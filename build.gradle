@@ -172,7 +172,7 @@ tasks.register("publishCurseForge", TaskPublishCurseForge) {
     }
     if (embeddiumIntegration) mainFile.addOptional("embeddium")
     if (useProvider) mainFile.addRequirement("registrynameprovider")
-    if (useJsonate) mainFile.addRequirement("jsonate")
+    if (useJsonate) mainFile.addOptional("jsonate")
     if (useBlockTracker) mainFile.addRequirement("blocktrackerapi")
 
     UploadArtifact sourcesFile = mainFile.withAdditionalFile(sourcesJar)
