@@ -36,7 +36,7 @@ public final class LootStories {
             LOGGER.info("Story loaded: {}", story.info().title());
         });
         if (CONFIG != null) CONFIG.initBindStories();
-        Extractor.extractJar(LootStories.MOD_ID, "assets/lootstories/readme/", FMLLoader.getGamePath().resolve("config").resolve(LootStories.MOD_ID));
+        Extractor.extractJar(LootStories.MOD_ID, "assets/lootstories/readme/", FMLLoader.getGamePath().resolve("config").resolve(LootStories.MOD_ID), true);
     }
 
     public static int getWeight(String title) {
@@ -48,7 +48,7 @@ public final class LootStories {
         Path configDir = FMLPaths.GAMEDIR.get().resolve("config").resolve(MOD_ID);
 
         try {
-            if (!Files.exists(configDir)) Extractor.extractJar(MOD_ID, "assets/lootstories/stories/", configDir);
+            if (!Files.exists(configDir)) Extractor.extractJar(MOD_ID, "assets/lootstories/stories/", configDir, false);
 
             try (Stream<Path> files = Files.list(configDir)) {
                 files.filter(f -> f.toString().endsWith(".txt")).forEach(file -> {

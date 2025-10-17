@@ -13,7 +13,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public final class Extractor {
-    public static void extractJar(String modId, String sourcePath, Path targetDir) {
+    public static void extractJar(String modId, String sourcePath, Path targetDir, boolean overwrite) {
         try {
             Files.createDirectories(targetDir);
 
@@ -29,7 +29,7 @@ public final class Extractor {
                     if (entry.isDirectory()) continue;
 
                     Path targetFile = targetDir.resolve(Path.of(entryName).getFileName());
-                    if (Files.exists(targetFile)) continue;
+                    if (Files.exists(targetFile) && overwrite) continue;
 
                     try (InputStream in = zip.getInputStream(entry)) {
                         Files.copy(in, targetFile);
