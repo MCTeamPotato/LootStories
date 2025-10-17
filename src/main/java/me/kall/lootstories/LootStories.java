@@ -45,7 +45,7 @@ public final class LootStories {
     }
 
     public static boolean mayGen() {
-        return ThreadLocalRandom.current().nextInt(100) <= (CONFIG == null ? 60 : CONFIG.possibility());
+        return ThreadLocalRandom.current().nextInt(100) <= (CONFIG == null ? 100 : CONFIG.possibility());
     }
 
     public static Story randomStory() {
