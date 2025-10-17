@@ -29,7 +29,7 @@ public final class Extractor {
                     if (entry.isDirectory()) continue;
 
                     Path targetFile = targetDir.resolve(Path.of(entryName).getFileName());
-                    if (Files.exists(targetFile) && overwrite) continue;
+                    if (Files.exists(targetFile) && !overwrite) continue;
 
                     try (InputStream in = zip.getInputStream(entry)) {
                         Files.copy(in, targetFile);

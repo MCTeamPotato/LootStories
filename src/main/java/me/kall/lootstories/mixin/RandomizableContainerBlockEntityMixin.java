@@ -9,7 +9,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.ai.behavior.ShufflingList;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -26,7 +25,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Mixin(RandomizableContainerBlockEntity.class)
 public abstract class RandomizableContainerBlockEntityMixin extends BaseContainerBlockEntity {
@@ -40,7 +38,7 @@ public abstract class RandomizableContainerBlockEntityMixin extends BaseContaine
 
     @Inject(method = "unpackLootTable", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/storage/loot/LootTable;fill(Lnet/minecraft/world/Container;Lnet/minecraft/world/level/storage/loot/LootParams;J)V", shift = At.Shift.AFTER))
     private void onLoadLoots(Player player, CallbackInfo ci) {
-        if (story$mayGen() && LootStories.STORIES.iterator().hasNext()) {
+        if (LootStories.STORY_MANAGER.mayGenerateBook()) {
             ItemStack stack = Items.WRITTEN_BOOK.getDefaultInstance();
             stack.setTag(this.story$fillBook());
             for (int i = 0; i < this.getItems().size(); i++) {
@@ -56,7 +54,7 @@ public abstract class RandomizableContainerBlockEntityMixin extends BaseContaine
     private @NotNull CompoundTag story$fillBook() {
         CompoundTag bookTag = new CompoundTag();
 
-        Story story = story$selectStory();
+        Story story = LootStories.STORY_MANAGER.getRandomStory(this.lootTable);
         ListTag pages = this.story$createPages(story.content());
         bookTag.put("pages", pages);
 
@@ -82,31 +80,5 @@ public abstract class RandomizableContainerBlockEntityMixin extends BaseContaine
         }
 
         return pages;
-    }
-
-    @Unique
-    private Story story$selectStory() {
-        if (LootStories.CONFIG == null) {
-            return story$getRandom(LootStories.STORIES);
-        }
-
-        if (this.lootTable != null) {
-            ShufflingList<Story> bound = LootStories.CONFIG.bindStories().get(this.lootTable);
-            if (bound != null && bound.iterator().hasNext()) {
-                return story$getRandom(bound);
-            }
-        }
-
-        return story$getRandom(LootStories.STORIES);
-    }
-
-    @Unique
-    private Story story$getRandom(@NotNull ShufflingList<Story> stories) {
-        return stories.shuffle().stream().findFirst().orElseThrow();
-    }
-
-    @Unique
-    private static boolean story$mayGen() {
-        return ThreadLocalRandom.current().nextInt(100) < (LootStories.CONFIG == null ? 100 : LootStories.CONFIG.possibility());
     }
 }
