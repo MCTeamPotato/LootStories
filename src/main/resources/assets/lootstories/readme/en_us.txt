@@ -2,9 +2,6 @@
 LootStories Configuration Guide (English)
 ============================
 
-Location: config/lootstories/
-This mod automatically generates story text (.txt) files and config files here.
-
 [1] BookLootPossibility(%)
 - Controls the chance (0–100) that a loot chest will contain a story book.
 
@@ -18,6 +15,7 @@ This mod automatically generates story text (.txt) files and config files here.
 - Binds specific loot tables to specific stories.
   Example:
     minecraft:chests/desert_pyramid;Desert Secrets
+    minecraft:chests/desert_pyramid;The Great Adventure
     minecraft:chests/village/village_library;The Great Adventure
 
 [4] Story File Naming
@@ -30,3 +28,4 @@ This mod automatically generates story text (.txt) files and config files here.
 [5] Notes
 - Restart the game after editing config.
 - If you delete story files, default stories will be extracted again.
+- You can also extract this mod's jar to get the default stories files.
