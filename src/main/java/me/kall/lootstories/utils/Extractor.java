@@ -33,14 +33,14 @@ public final class Extractor {
 
                     try (InputStream in = zip.getInputStream(entry)) {
                         Files.copy(in, targetFile);
-                        LootStories.LOGGER.info("Extracted {} to {}", entryName, targetFile);
+                        LootStories.LOGGER.info("[LootStories] Extracted {} to {}", entryName, targetFile);
                     } catch (Exception e) {
-                        LootStories.LOGGER.warn("Failed to extract {}: {}", entryName, e.getMessage());
+                        LootStories.LOGGER.warn("[LootStories] Failed to extract {}: {}", entryName, e.getMessage());
                     }
                 }
             }
         } catch (IOException e) {
-            LootStories.LOGGER.warn("Failed to extract resources from mod jar", e);
+            LootStories.LOGGER.warn("[LootStories] Failed to extract resources from mod jar", e);
         }
     }
 }

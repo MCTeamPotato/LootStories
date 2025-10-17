@@ -41,7 +41,7 @@ public final class LootStories {
                             try {
                                 return new Story(Info.parse(file.getFileName().toString()), Files.readString(file));
                             } catch (Exception e) {
-                                LOGGER.warn("Failed to read story file {}", file, e);
+                                LOGGER.warn("[LootStories] Failed to read story file {}", file, e);
                                 return null;
                             }
                         })
@@ -49,7 +49,7 @@ public final class LootStories {
                         .collect(Collectors.toList());
             }
         } catch (Exception e) {
-            LOGGER.error("Failed to load stories", e);
+            LOGGER.error("[LootStories] Failed to load stories", e);
         }
         return List.of();
     }

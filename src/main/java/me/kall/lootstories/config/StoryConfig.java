@@ -30,15 +30,15 @@ public class StoryConfig implements IConfig {
         storyConfig.getStream("StoryWeight", String.class).forEach(entry -> {
             String[] parts = entry.split(";");
             storyWeights.put(parts[0], Integer.parseInt(parts[1]));
-            LootStories.LOGGER.info("Loaded story weight: {} -> {}", parts[0], parts[1]);
+            LootStories.LOGGER.info("[LootStories] Loaded story weight: {} -> {}", parts[0], parts[1]);
         });
     }
 
     private void initBoundStories() {
         storyConfig.getStream("ChestBindStory", String.class).forEach(entry -> {
             String[] parts = entry.split(";");
-            ResourceLocation lootTable = ResourceLocation.parse(parts[0]);
-            boundStoryTitles.computeIfAbsent(lootTable, k -> Lists.newArrayList()).add(parts[1]);
+            boundStoryTitles.computeIfAbsent(ResourceLocation.parse(parts[0]), k -> Lists.newArrayList()).add(parts[1]);
+            LootStories.LOGGER.info("[LootStories] LootTable {} was linked to story {}", parts[0], parts[1]);
         });
     }
 
