@@ -49,7 +49,7 @@ public final class LootStories {
     }
 
     public static Story randomStory() {
-        return STORIES.shuffle().stream().findAny().orElseThrow();
+        return STORIES.shuffle().stream().findFirst().orElseThrow();
     }
 
     private static @NotNull List<Story> loadStories() {
