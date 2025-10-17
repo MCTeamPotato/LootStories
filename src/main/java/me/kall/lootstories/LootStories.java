@@ -5,6 +5,7 @@ import me.kall.lootstories.config.StoryConfig;
 import me.kall.lootstories.data.Info;
 import me.kall.lootstories.data.Story;
 import me.kall.lootstories.utils.Extractor;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +18,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Mod(LootStories.MOD_ID)
 public final class LootStories {
 
     public static final String MOD_ID = "lootstories";
@@ -52,6 +54,6 @@ public final class LootStories {
     }
 
     private static void readme() {
-        Extractor.extractJar(MOD_ID, "assets/lootstories/readme/", FMLLoader.getGamePath().resolve("config").resolve(MOD_ID), true);
+        Extractor.extractJar(MOD_ID, "assets/lootstories/readme/", FMLLoader.getGamePath().resolve("config"), true);
     }
 }
