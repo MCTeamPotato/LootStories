@@ -44,7 +44,6 @@ public class StoryManager {
         }
     }
 
-
     public Story getRandomStory(@Nullable ResourceLocation lootTable) {
         ShufflingList<Story> list = lootTable != null ? boundStories.get(lootTable) : null;
         if (list != null && list.iterator().hasNext()) return getRandom(list);

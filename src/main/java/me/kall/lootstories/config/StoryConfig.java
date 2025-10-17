@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class StoryConfig implements IConfig {
 
-    private final JsonConfig storyConfig = JsonConfig.create(LootStories.MOD_ID, "4")
-            .put("BookLootPossibility(%)", 60)
+    private final JsonConfig storyConfig = JsonConfig.create(LootStories.MOD_ID, "5")
+            .put("BookLootPossibility(%)", 100)
             .put("StoryWeight", Lists.newArrayList())
             .put("ChestBindStory", Lists.newArrayList())
             .initialize();
