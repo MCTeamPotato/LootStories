@@ -2,6 +2,7 @@ package me.kall.lootstories;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import me.kall.lootstories.config.IConfig;
+import me.kall.lootstories.config.Readme;
 import me.kall.lootstories.config.StoryConfig;
 import me.kall.lootstories.data.Info;
 import me.kall.lootstories.data.Story;
@@ -35,6 +36,7 @@ public final class LootStories {
     public static final @Nullable IConfig CONFIG = FMLLoader.getLoadingModList().getModFileById("jsonate") == null ? null : new StoryConfig();
 
     static {
+        Readme.init();
         if (CONFIG != null) CONFIG.initStoryWeight();
         loadStories().forEach(story -> {
             STORIES.add(story, getWeight(story.info().title()));
