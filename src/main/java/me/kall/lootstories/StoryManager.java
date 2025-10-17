@@ -16,9 +16,9 @@ public class StoryManager {
 
     private final ShufflingList<Story> allStories = new ShufflingList<>();
     private final Map<ResourceLocation, ShufflingList<Story>> boundStories = new Object2ObjectOpenHashMap<>();
-    private final IConfig config;
+    private final @Nullable IConfig config;
 
-    public StoryManager(IConfig config, List<Story> stories) {
+    public StoryManager(@Nullable IConfig config, List<Story> stories) {
         this.config = config;
         loadStories(stories);
         bindStories();
@@ -26,11 +26,12 @@ public class StoryManager {
 
     private void loadStories(@NotNull List<Story> stories) {
         for (Story story : stories) {
-            allStories.add(story, config.storyWeights().getOrDefault(story.info().title(), 10));
+            allStories.add(story, config == null ? 10 : config.storyWeights().getOrDefault(story.info().title(), 10));
         }
     }
 
     private void bindStories() {
+        if (config == null) return;
         for (var entry : config.boundStoryTitles().entrySet()) {
             ResourceLocation lootTable = entry.getKey();
             ShufflingList<Story> list = new ShufflingList<>();
@@ -55,6 +56,6 @@ public class StoryManager {
     }
 
     public boolean mayGenerateBook() {
-        return ThreadLocalRandom.current().nextInt(100) < config.bookLootChance() && this.allStories.iterator().hasNext();
+        return ThreadLocalRandom.current().nextInt(100) < (config == null ? 100 : config.bookLootChance()) && this.allStories.iterator().hasNext();
     }
 }
