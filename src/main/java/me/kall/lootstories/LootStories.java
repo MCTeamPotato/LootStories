@@ -3,6 +3,8 @@ package me.kall.lootstories;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import me.kall.lootstories.config.IConfig;
 import me.kall.lootstories.config.StoryConfig;
+import me.kall.lootstories.data.Info;
+import me.kall.lootstories.data.Story;
 import net.minecraft.world.entity.ai.behavior.ShufflingList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLLoader;
@@ -20,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -34,22 +35,16 @@ public final class LootStories {
     public static final @Nullable IConfig CONFIG = FMLLoader.getLoadingModList().getModFileById("jsonate") == null ? null : new StoryConfig();
 
     static {
+        if (CONFIG != null) CONFIG.initStoryWeight();
         loadStories().forEach(story -> {
-            STORIES.add(story, getWeight(story.info.title));
-            LOGGER.info("Story loaded: {}", story.info.title);
+            STORIES.add(story, getWeight(story.info().title()));
+            LOGGER.info("Story loaded: {}", story.info().title());
         });
+        if (CONFIG != null) CONFIG.initBindStories();
     }
 
-    private static int getWeight(String title) {
+    public static int getWeight(String title) {
         return CONFIG == null ? 10 : CONFIG.storyWeight().getOrDefault(title, 10);
-    }
-
-    public static boolean mayGen() {
-        return ThreadLocalRandom.current().nextInt(100) <= (CONFIG == null ? 100 : CONFIG.possibility());
-    }
-
-    public static Story randomStory() {
-        return STORIES.shuffle().stream().findFirst().orElseThrow();
     }
 
     private static @NotNull List<Story> loadStories() {
@@ -99,7 +94,7 @@ public final class LootStories {
         }
     }
 
-    private static @NotNull LootStories.Info parse(@Nullable String filename) {
+    private static @NotNull Info parse(@Nullable String filename) {
         if (filename == null) return new Info("", "");
 
         int dot = filename.lastIndexOf('.');
@@ -115,7 +110,4 @@ public final class LootStories {
 
         return new Info(nameWithoutExt, "unknown");
     }
-
-    public record Info(String title, String author) {}
-    public record Story(Info info, String content)  {}
 }
