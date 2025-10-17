@@ -33,7 +33,7 @@ public abstract class RandomizableContainerBlockEntityMixin extends BaseContaine
 
     @Inject(method = "unpackLootTable", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/storage/loot/LootTable;fill(Lnet/minecraft/world/Container;Lnet/minecraft/world/level/storage/loot/LootParams;J)V", shift = At.Shift.AFTER))
     private void onLoadLoots(Player player, CallbackInfo ci) {
-        if (LootStories.mayGen() && !LootStories.STORIES.isEmpty()) {
+        if (LootStories.mayGen() && LootStories.STORIES.iterator().hasNext()) {
             ItemStack stack = Items.WRITTEN_BOOK.getDefaultInstance();
             stack.setTag(story$fillBook());
             for (int i = 0; i < this.getItems().size(); i++) {

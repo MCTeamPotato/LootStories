@@ -3,6 +3,7 @@ package me.kall.lootstories;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import me.kall.lootstories.config.IConfig;
 import me.kall.lootstories.config.StoryConfig;
+import net.minecraft.world.entity.ai.behavior.ShufflingList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -29,15 +30,26 @@ public final class LootStories {
     public static final String MOD_ID = "lootstories";
     public static final String MOD_NAME = "LootStories";
     public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
-    public static final List<Story> STORIES = loadStories();
+    public static final ShufflingList<Story> STORIES = new ShufflingList<>();
     public static final @Nullable IConfig CONFIG = FMLLoader.getLoadingModList().getModFileById("jsonate") == null ? null : new StoryConfig();
+
+    static {
+        loadStories().forEach(story -> {
+            STORIES.add(story, getWeight(story.info.title));
+            LOGGER.info("Story loaded: {}", story.info.title);
+        });
+    }
+
+    private static int getWeight(String title) {
+        return CONFIG == null ? 10 : CONFIG.storyWeight().getOrDefault(title, 10);
+    }
 
     public static boolean mayGen() {
         return ThreadLocalRandom.current().nextInt(100) <= (CONFIG == null ? 60 : CONFIG.possibility());
     }
 
     public static Story randomStory() {
-        return STORIES.get(ThreadLocalRandom.current().nextInt(STORIES.size()));
+        return STORIES.shuffle().stream().findAny().orElseThrow();
     }
 
     private static @NotNull List<Story> loadStories() {
@@ -105,5 +117,5 @@ public final class LootStories {
     }
 
     public record Info(String title, String author) {}
-    public record Story(Info info, String content) {}
+    public record Story(Info info, String content)  {}
 }
