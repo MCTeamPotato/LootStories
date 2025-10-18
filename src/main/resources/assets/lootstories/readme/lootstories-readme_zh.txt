@@ -19,7 +19,7 @@ LootStories 配置说明（中文）
     minecraft:chests/village/village_library;The Great Adventure
 
 【4】故事文件命名规则
-- 文件放在 config/lootstories/ 下。
+- 文件放在 config/lootstories/语种 下。
 - 文件名格式为: 标题by作者.txt
   例如:
     The Great AdventurebyAlex.txt

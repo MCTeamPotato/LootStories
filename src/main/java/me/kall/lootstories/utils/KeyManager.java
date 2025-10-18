@@ -1,19 +1,18 @@
 package me.kall.lootstories.utils;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.kall.lootstories.LootStories;
 import me.kall.lootstories.data.Story;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
 public final class KeyManager {
 
-    private final Map<Story, ResourceLocation> storyToKey = new IdentityHashMap<>();
-    private final Map<ResourceLocation, Story> keyToStory = new HashMap<>();
+    private final Map<Story, ResourceLocation> storyToKey = new Object2ObjectOpenHashMap<>();
+    private final Map<ResourceLocation, Story> keyToStory = new Object2ObjectOpenHashMap<>();
 
     public KeyManager(@NotNull String modId, @NotNull List<Story> stories) {
         for (Story story : stories) {

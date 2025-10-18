@@ -19,7 +19,7 @@ LootStories Configuration Guide (English)
     minecraft:chests/village/village_library;The Great Adventure
 
 [4] Story File Naming
-- Files are stored under config/lootstories/
+- Files are stored under config/lootstories/<languageCategory>
 - Naming format: TitlebyAuthor.txt
   Example:
     The Great AdventurebyAlex.txt
