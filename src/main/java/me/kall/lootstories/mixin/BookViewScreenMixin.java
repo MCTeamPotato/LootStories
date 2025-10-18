@@ -2,6 +2,7 @@ package me.kall.lootstories.mixin;
 
 import me.kall.lootstories.LootStories;
 import me.kall.lootstories.data.Story;
+import me.kall.lootstories.utils.StorySplit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -80,7 +81,7 @@ public abstract class BookViewScreenMixin extends Screen {
             }
 
             this.loot$story = story;
-            this.story$pages = Story.splitStory(minecraft.font, this.loot$story, TEXT_WIDTH, TEXT_HEIGHT);
+            this.story$pages = StorySplit.splitStory(minecraft.font, this.loot$story, TEXT_WIDTH, TEXT_HEIGHT);
         }
 
 
