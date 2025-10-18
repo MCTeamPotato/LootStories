@@ -36,7 +36,10 @@ public abstract class RandomizableContainerBlockEntityMixin extends BaseContaine
         super(type, pos, blockState);
     }
 
-    @Inject(method = "unpackLootTable", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/storage/loot/LootTable;fill(Lnet/minecraft/world/Container;Lnet/minecraft/world/level/storage/loot/LootParams;J)V", shift = At.Shift.AFTER))
+    @Inject(method = "unpackLootTable",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/world/level/storage/loot/LootTable;fill(Lnet/minecraft/world/Container;Lnet/minecraft/world/level/storage/loot/LootParams;J)V",
+                    shift = At.Shift.AFTER))
     private void onLoadLoots(Player player, CallbackInfo ci) {
         if (LootStories.STORY_MANAGER.mayGenerateBook()) {
             ItemStack stack = Items.WRITTEN_BOOK.getDefaultInstance();
@@ -55,7 +58,10 @@ public abstract class RandomizableContainerBlockEntityMixin extends BaseContaine
         CompoundTag bookTag = new CompoundTag();
 
         Story story = LootStories.STORY_MANAGER.getRandomStory(this.lootTable);
-        ListTag pages = this.story$createPages(story.content());
+        ResourceLocation key = LootStories.KEY_MANAGER.getKey(story);
+
+        ListTag pages = new ListTag();
+        pages.add(StringTag.valueOf(key.toString()));
         bookTag.put("pages", pages);
 
         Info info = story.info();
@@ -64,21 +70,7 @@ public abstract class RandomizableContainerBlockEntityMixin extends BaseContaine
         bookTag.putString("author", author);
 
         bookTag.putBoolean("resolved", true);
+        bookTag.putBoolean(LootStories.MOD_ID, true);
         return bookTag;
-    }
-
-    @Unique
-    private @NotNull ListTag story$createPages(@NotNull String story) {
-        ListTag pages = new ListTag();
-        int pageLength = 128;
-        int start = 0;
-
-        while (start < story.length()) {
-            int end = Math.min(start + pageLength, story.length());
-            pages.add(StringTag.valueOf(story.substring(start, end)));
-            start = end;
-        }
-
-        return pages;
     }
 }

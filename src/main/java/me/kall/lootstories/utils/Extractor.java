@@ -28,7 +28,10 @@ public final class Extractor {
                     if (!entryName.startsWith(sourcePath)) continue;
                     if (entry.isDirectory()) continue;
 
-                    Path targetFile = targetDir.resolve(Path.of(entryName).getFileName());
+                    String relativePath = entryName.substring(sourcePath.length());
+                    Path targetFile = targetDir.resolve(relativePath);
+                    Files.createDirectories(targetFile.getParent());
+
                     if (Files.exists(targetFile) && !overwrite) continue;
 
                     try (InputStream in = zip.getInputStream(entry)) {
