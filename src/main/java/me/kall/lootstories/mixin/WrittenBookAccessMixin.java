@@ -23,8 +23,7 @@ import java.util.List;
 
 @Mixin(BookViewScreen.WrittenBookAccess.class)
 public abstract class WrittenBookAccessMixin {
-    @Unique private Story book$story;
-    @Unique private List<List<FormattedText>> book$storyPages;
+    @Unique private List<FormattedText> book$storyPages;
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void init(ItemStack book, CallbackInfo ci) {
@@ -36,7 +35,7 @@ public abstract class WrittenBookAccessMixin {
         CompoundTag tag = book.getTag();
         if (book.isEmpty() || tag == null || !tag.getBoolean(LootStories.MOD_ID)) return;
 
-        if (this.book$story == null) {
+        if (this.book$storyPages == null) {
             ResourceLocation key = ResourceLocation.tryParse(tag.getList("pages", Tag.TAG_STRING).getString(0));
             if (key == null) return;
 
@@ -51,15 +50,22 @@ public abstract class WrittenBookAccessMixin {
                 story = langStories.stream().filter(s -> s.info().title().equals(copy.info().title())).findFirst().orElse(story);
             }
 
-            this.book$story = story;
-            this.book$storyPages = StorySplit.splitStory(minecraft.font, this.book$story, 114, 128);
+            this.book$storyPages = StorySplit.splitStory(minecraft.font, story, 114, 128)
+                    .stream()
+                    .map(pageList -> {
+                        StringBuilder builder = new StringBuilder();
+                        for (FormattedText text : pageList) {
+                            builder.append(text.getString());
+                        }
+                        return FormattedText.of(builder.toString());
+                    }).toList();
         }
     }
 
     @Inject(method = "getPageCount", at = @At("HEAD"), cancellable = true)
     private void onCountPage(CallbackInfoReturnable<Integer> cir) {
-        if (this.book$story == null || this.book$storyPages == null) return;
-        cir.setReturnValue(this.book$story.pageCount);
+        if (this.book$storyPages == null) return;
+        cir.setReturnValue(this.book$storyPages.size());
     }
 
     @Inject(method = "getPageRaw", at = @At("HEAD"), cancellable = true)
@@ -71,19 +77,11 @@ public abstract class WrittenBookAccessMixin {
 
     @Unique
     private @Nullable FormattedText story$getPage(int index) {
-        if (this.book$story == null || this.book$storyPages == null) return null;
-        List<FormattedText> page;
+        if (this.book$storyPages == null) return null;
         try {
-            page = this.book$storyPages.get(index);
+            return this.book$storyPages.get(index);
         } catch (IndexOutOfBoundsException e) {
-            page = List.of();
+            return null;
         }
-
-        StringBuilder builder = new StringBuilder();
-        for (FormattedText text : page) {
-            builder.append(text.getString());
-        }
-
-        return FormattedText.of(builder.toString());
     }
 }
