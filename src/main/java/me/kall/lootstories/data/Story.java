@@ -1,6 +1,6 @@
 package me.kall.lootstories.data;
 
-import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.network.chat.FormattedText;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -9,7 +9,7 @@ public class Story {
     private final Info info;
     private final String content;
 
-    private List<List<FormattedCharSequence>> pages;
+    private List<List<FormattedText>> pages;
     public int pageCount;
 
     public Story(Info info, String content) {
@@ -18,11 +18,11 @@ public class Story {
         pageCount = countPages(this.content);
     }
 
-    public void setPages(List<List<FormattedCharSequence>> pages) {
+    public void setPages(List<List<FormattedText>> pages) {
         this.pages = pages;
     }
 
-    public List<List<FormattedCharSequence>> pages() {
+    public List<List<FormattedText>> pages() {
         return this.pages;
     }
 
