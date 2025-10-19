@@ -1,2 +1,2 @@
-# 1.2.1
-- Avoid overriding the Written Book rendering logic for better compatibility
+# 1.2.2
+- Optimize WrittenBookAccessMixin by caching the built page texts.
