@@ -1,3 +1,2 @@
-# 1.2.0
-- Better localization support
-- Story weight and loot table bind configuration
+# 1.2.1
+- Avoid overriding the Written Book rendering logic for better compatibility
