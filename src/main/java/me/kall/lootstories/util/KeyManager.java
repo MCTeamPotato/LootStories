@@ -1,4 +1,4 @@
-package me.kall.lootstories.utils;
+package me.kall.lootstories.util;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.kall.lootstories.LootStories;
@@ -16,21 +16,21 @@ public final class KeyManager {
 
     public KeyManager(@NotNull String modId, @NotNull List<Story> stories) {
         for (Story story : stories) {
-            ResourceLocation key = generateKey(modId, story);
-            storyToKey.put(story, key);
-            keyToStory.put(key, story);
-            LootStories.LOGGER.info("[LootStories] Registered story key {} for '{}'", key, story.info().title());
+            ResourceLocation storyKey = generateKey(modId, story);
+            storyToKey.put(story, storyKey);
+            keyToStory.put(storyKey, story);
+            LootStories.LOGGER.info("[LootStories] Registered keys {} for '{}' by '{}'", storyKey, story.info().title(), story.info().author());
         }
     }
 
     private static @NotNull ResourceLocation generateKey(String modId, @NotNull Story story) {
-        String base = story.info().title().toLowerCase().replaceAll("\\s+", "_");
-        base = encodePath(base);
-        int hash = story.content().hashCode();
-        return ResourceLocation.fromNamespaceAndPath(modId, base + "_" + Integer.toHexString(hash));
+        String title = story.info().title().toLowerCase().replaceAll("\\s+", "_");
+        title = encode(title);
+        int contentHash = story.content().hashCode();
+        return ResourceLocation.fromNamespaceAndPath(modId, title + "_" + Integer.toHexString(contentHash));
     }
 
-    private static @NotNull String encodePath(@NotNull String input) {
+    private static @NotNull String encode(@NotNull String input) {
         StringBuilder sb = new StringBuilder();
         for (char c : input.toCharArray()) {
             if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' || c == '-' || c == '.') {

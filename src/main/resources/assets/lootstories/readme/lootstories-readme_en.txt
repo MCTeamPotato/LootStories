@@ -20,9 +20,9 @@ LootStories Configuration Guide (English)
 
 [4] Story File Naming
 - Files are stored under config/lootstories/<languageCategory>
-- Naming format: TitlebyAuthor.txt
+- The first line inside the txt file should be: Title by Author
   Example:
-    The Great AdventurebyAlex.txt
+    The Great Adventure by Alex
   If author is omitted, defaults to "unknown".
 
 [5] Notes

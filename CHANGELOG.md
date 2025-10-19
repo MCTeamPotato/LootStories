@@ -1,3 +1,2 @@
-# 1.2.2
-- Optimize WrittenBookAccessMixin by caching the built page texts.
-- Clean up unused Story#pageCount field and useless book#story field
+# 1.3.0
+- For better localization, we no longer read txt file name for title and author, but read the first line inside the txt file.

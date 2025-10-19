@@ -20,9 +20,9 @@ LootStories 配置说明（中文）
 
 【4】故事文件命名规则
 - 文件放在 config/lootstories/语种 下。
-- 文件名格式为: 标题by作者.txt
+- 文件内部第一行的格式为: 标题by作者
   例如:
-    The Great AdventurebyAlex.txt
+    The Great Adventure by Alex
   若省略作者，则默认为 unknown。
 
 【5】注意事项

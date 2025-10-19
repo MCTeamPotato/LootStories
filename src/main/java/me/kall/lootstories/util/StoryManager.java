@@ -1,4 +1,4 @@
-package me.kall.lootstories.utils;
+package me.kall.lootstories.util;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.kall.lootstories.config.IConfig;

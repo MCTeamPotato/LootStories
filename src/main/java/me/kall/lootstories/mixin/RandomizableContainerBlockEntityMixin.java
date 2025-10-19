@@ -36,10 +36,7 @@ public abstract class RandomizableContainerBlockEntityMixin extends BaseContaine
         super(type, pos, blockState);
     }
 
-    @Inject(method = "unpackLootTable",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/world/level/storage/loot/LootTable;fill(Lnet/minecraft/world/Container;Lnet/minecraft/world/level/storage/loot/LootParams;J)V",
-                    shift = At.Shift.AFTER))
+    @Inject(method = "unpackLootTable", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/storage/loot/LootTable;fill(Lnet/minecraft/world/Container;Lnet/minecraft/world/level/storage/loot/LootParams;J)V", shift = At.Shift.AFTER))
     private void onLoadLoots(Player player, CallbackInfo ci) {
         if (LootStories.STORY_MANAGER.mayGenerateBook()) {
             ItemStack stack = Items.WRITTEN_BOOK.getDefaultInstance();
@@ -58,13 +55,14 @@ public abstract class RandomizableContainerBlockEntityMixin extends BaseContaine
         CompoundTag bookTag = new CompoundTag();
 
         Story story = LootStories.STORY_MANAGER.getRandomStory(this.lootTable);
-        ResourceLocation key = LootStories.KEY_MANAGER.getKey(story);
+        ResourceLocation storyKey = LootStories.KEY_MANAGER.getKey(story);
 
         ListTag pages = new ListTag();
-        pages.add(StringTag.valueOf(key.toString()));
+        pages.add(StringTag.valueOf(storyKey.toString()));
         bookTag.put("pages", pages);
 
         Info info = story.info();
+
         bookTag.putString("title", info.title());
         String author = (info.author() == null || info.author().isEmpty()) ? "unknown" : info.author();
         bookTag.putString("author", author);

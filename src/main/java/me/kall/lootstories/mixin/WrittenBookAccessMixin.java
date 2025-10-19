@@ -2,7 +2,7 @@ package me.kall.lootstories.mixin;
 
 import me.kall.lootstories.LootStories;
 import me.kall.lootstories.data.Story;
-import me.kall.lootstories.utils.StorySplit;
+import me.kall.lootstories.util.StorySplit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.nbt.CompoundTag;

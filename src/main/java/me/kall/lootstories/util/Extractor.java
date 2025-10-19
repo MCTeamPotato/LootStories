@@ -1,4 +1,4 @@
-package me.kall.lootstories.utils;
+package me.kall.lootstories.util;
 
 import me.kall.lootstories.LootStories;
 import net.minecraftforge.fml.loading.FMLLoader;

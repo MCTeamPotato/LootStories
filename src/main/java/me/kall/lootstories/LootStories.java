@@ -4,9 +4,9 @@ import me.kall.lootstories.config.IConfig;
 import me.kall.lootstories.config.StoryConfig;
 import me.kall.lootstories.data.Info;
 import me.kall.lootstories.data.Story;
-import me.kall.lootstories.utils.Extractor;
-import me.kall.lootstories.utils.KeyManager;
-import me.kall.lootstories.utils.StoryManager;
+import me.kall.lootstories.util.Extractor;
+import me.kall.lootstories.util.KeyManager;
+import me.kall.lootstories.util.StoryManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -31,8 +31,10 @@ public final class LootStories {
     public static final Logger LOGGER = LogManager.getLogger("LootStories");
     public static final @Nullable IConfig CONFIG = FMLLoader.getLoadingModList().getModFileById("jsonate") == null ? null : new StoryConfig();
     public static final Map<String, List<Story>> STORIES = loadStories();
-    public static final StoryManager STORY_MANAGER = new StoryManager(CONFIG, STORIES.values().stream().flatMap(Collection::stream).collect(Collectors.toList()));
-    public static final KeyManager KEY_MANAGER = new KeyManager(MOD_ID, STORIES.values().stream().flatMap(Collection::stream).collect(Collectors.toList()));
+
+    private static final List<Story> STORIES_FLAT = STORIES.values().stream().flatMap(Collection::stream).toList();
+    public static final StoryManager STORY_MANAGER = new StoryManager(CONFIG, STORIES_FLAT);
+    public static final KeyManager KEY_MANAGER = new KeyManager(MOD_ID, STORIES_FLAT);
 
     private static @NotNull Map<String, List<Story>> loadStories() {
         Path configDir = FMLPaths.GAMEDIR.get().resolve("config").resolve(MOD_ID);
@@ -47,11 +49,11 @@ public final class LootStories {
                     String lang = langDir.getFileName().toString();
                     try (Stream<Path> files = Files.list(langDir)) {
                         List<Story> stories = files.filter(f -> f.toString().endsWith(".txt"))
-                                .map(file -> {
+                                .map(filePath -> {
                                     try {
-                                        return new Story(Info.parse(file.getFileName().toString()), Files.readString(file));
+                                        return new Story(Info.parse(filePath), Files.readString(filePath));
                                     } catch (Exception e) {
-                                        LOGGER.warn("[LootStories] Failed to read story file {} for lang {}", file, lang, e);
+                                        LOGGER.warn("[LootStories] Failed to read story file {} for lang {}", filePath, lang, e);
                                         return null;
                                     }
                                 })
@@ -74,10 +76,6 @@ public final class LootStories {
 
 
     static {
-        if (CONFIG != null) readme();
-    }
-
-    private static void readme() {
-        Extractor.extractJar(MOD_ID, "assets/lootstories/readme/", FMLLoader.getGamePath().resolve("config"), true);
+        if (CONFIG != null) Extractor.extractJar(MOD_ID, "assets/lootstories/readme/", FMLLoader.getGamePath().resolve("config"), true);
     }
 }
