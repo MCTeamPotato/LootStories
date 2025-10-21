@@ -1,5 +1,6 @@
 package me.kall.lootstories.mixin;
 
+import com.google.common.collect.Lists;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -30,7 +31,7 @@ public class MixinExtrasInit implements IMixinConfigPlugin {
 
     @Override
     public List<String> getMixins() {
-        return List.of();
+        return Lists.newArrayList();
     }
 
     @Override

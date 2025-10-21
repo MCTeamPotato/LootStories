@@ -6,10 +6,11 @@ import me.kall.lootstories.LootStories;
 import me.kall.lootstories.common.records.Story;
 import me.kall.lootstories.common.util.Lang;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WrittenBookItem;
+import net.minecraftforge.common.util.Constants;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,11 +26,11 @@ public abstract class WrittenBookItemMixin {
 
         Story story = null;
         try {
-            story = LootStories.STORY_MANAGER.storiesByFile.get(tag.getList("pages", Tag.TAG_STRING).getString(0)).get(Lang.getLang());
+            story = LootStories.STORY_MANAGER.storiesByFile.get(tag.getList("pages", Constants.NBT.TAG_STRING).getString(0)).get(Lang.getLang());
         } catch (Throwable ignored) {}
 
         if (story == null) return;
-        cir.setReturnValue(Component.literal(story.info().title()));
+        cir.setReturnValue(new TextComponent(story.info().title()));
     }
 
     @WrapOperation(method = "appendHoverText", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/CompoundTag;getString(Ljava/lang/String;)Ljava/lang/String;"))
@@ -37,7 +38,7 @@ public abstract class WrittenBookItemMixin {
         if (!tag.getBoolean(LootStories.MOD_ID)) return original.call(tag, key);
         Story story = null;
         try {
-            story = LootStories.STORY_MANAGER.storiesByFile.get(tag.getList("pages", Tag.TAG_STRING).getString(0)).get(Lang.getLang());
+            story = LootStories.STORY_MANAGER.storiesByFile.get(tag.getList("pages", Constants.NBT.TAG_STRING).getString(0)).get(Lang.getLang());
         } catch (Throwable ignored) {}
 
         if (story == null) return original.call(tag, key);

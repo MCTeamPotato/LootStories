@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -17,6 +18,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -81,7 +83,7 @@ public class FileManager {
                     .filter(path -> path.toString().endsWith(".txt"))
                     .map(FileManager::storyCreation)
                     .filter(Objects::nonNull)
-                    .toList();
+                    .collect(Collectors.toList());
             map.put(lang, stories);
         } catch (IOException e) {
             LootStories.LOGGER.error("Error reading stories from lang dir: {}", langDir, e);
@@ -90,7 +92,7 @@ public class FileManager {
 
     private static @Nullable Story storyCreation(Path txtFile) {
         try {
-            return new Story(Info.parseFile(txtFile), Files.readString(txtFile), txtFile.getFileName().toString());
+            return new Story(Info.parseFile(txtFile), new String(Files.readAllBytes(txtFile), StandardCharsets.UTF_8), txtFile.getFileName().toString());
         } catch (IOException e) {
             LootStories.LOGGER.error("Error reading story file: {}", txtFile, e);
             return null;

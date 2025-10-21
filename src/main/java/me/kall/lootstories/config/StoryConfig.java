@@ -40,7 +40,7 @@ public class StoryConfig implements IConfig {
     private void initBoundStories() {
         storyConfig.getStream("ChestBindStory", String.class).forEach(entry -> {
             String[] parts = entry.split(";");
-            boundStoryTitles.computeIfAbsent(ResourceLocation.parse(parts[0]), k -> new ObjectOpenHashSet<>()).add(parts[1]);
+            boundStoryTitles.computeIfAbsent(ResourceLocation.tryParse(parts[0]), k -> new ObjectOpenHashSet<>()).add(parts[1]);
             LootStories.LOGGER.info("[LootStories] LootTable {} was linked to story {}", parts[0], parts[1]);
         });
     }

@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-@SuppressWarnings("ClassCanBeRecord")
 public class Info {
     private final String title;
     private final String author;

@@ -4,6 +4,6 @@ import net.minecraft.client.Minecraft;
 
 public class Lang {
     public static String getLang() {
-        return Minecraft.getInstance().getLanguageManager().getSelected();
+        return Minecraft.getInstance().getLanguageManager().getSelected().getCode();
     }
 }

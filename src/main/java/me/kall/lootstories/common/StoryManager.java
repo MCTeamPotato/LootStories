@@ -10,10 +10,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.ai.behavior.ShufflingList;
+import net.minecraft.world.entity.ai.behavior.WeightedList;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.util.Constants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,13 +23,13 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class StoryManager {
     public final Map<String, List<Story>> storiesByLang;
-    private final ShufflingList<Story> storiesEn;
-    private final Map<ResourceLocation, ShufflingList<Story>> boundStoriesEn;
+    private final WeightedList<Story> storiesEn;
+    private final Map<ResourceLocation, WeightedList<Story>> boundStoriesEn;
     public final Map<String, Map<String, Story>> storiesByFile;
 
     public StoryManager() {
         this.storiesByLang = new Object2ObjectOpenHashMap<>();
-        this.storiesEn = new ShufflingList<>();
+        this.storiesEn = new WeightedList<>();
         this.boundStoriesEn = new Object2ObjectOpenHashMap<>();
         this.storiesByFile = new Object2ObjectOpenHashMap<>();
     }
@@ -45,9 +45,9 @@ public class StoryManager {
 
     public void bindStories() {
         LootStories.CONFIG_INSTANCE.storiesToBind().forEach((lootTable, titles) -> {
-            ShufflingList<Story> toBind = new ShufflingList<>();
+            WeightedList<Story> toBind = new WeightedList<>();
             titles.forEach(title -> storiesEn.stream().filter(story -> story.info().title().equals(title)).findFirst().ifPresent(story -> toBind.add(story, LootStories.CONFIG_INSTANCE.getWeight(title))));
-            if (toBind.iterator().hasNext()) boundStoriesEn.put(lootTable, toBind);
+            if (!toBind.isEmpty()) boundStoriesEn.put(lootTable, toBind);
         });
     }
 
@@ -69,13 +69,13 @@ public class StoryManager {
     }
 
     public Story getStoryForGen(@Nullable ResourceLocation lootTable) {
-        ShufflingList<Story> boundToGen = lootTable != null ? boundStoriesEn.get(lootTable) : null;
-        if (boundToGen != null && boundToGen.iterator().hasNext()) return getRandom(boundToGen);
+        WeightedList<Story> boundToGen = lootTable != null ? boundStoriesEn.get(lootTable) : null;
+        if (boundToGen != null && !boundToGen.isEmpty()) return getRandom(boundToGen);
         return getRandom(storiesEn);
     }
 
-    private Story getRandom(@NotNull ShufflingList<Story> stories) {
-        return stories.shuffle().stream().findFirst().orElseThrow();
+    private Story getRandom(@NotNull WeightedList<Story> stories) {
+        return stories.shuffle().stream().findFirst().orElseThrow(RuntimeException::new);
     }
 
     public void loadBookPages(ItemStack book, IBookAccess access) {
@@ -83,11 +83,11 @@ public class StoryManager {
         if (book.isEmpty() || tag == null || !tag.getBoolean(LootStories.MOD_ID)) return;
 
         if (access.story$pages() == null) {
-            String basedFile = tag.getList("pages", Tag.TAG_STRING).getString(0);
+            String basedFile = tag.getList("pages", Constants.NBT.TAG_STRING).getString(0);
 
             Minecraft minecraft = Minecraft.getInstance();
 
-            String lang = minecraft.getLanguageManager().getSelected();
+            String lang = minecraft.getLanguageManager().getSelected().getCode();
             Story story = this.storiesByFile.get(basedFile).get(lang);
 
             access.story$loadPages(Splitter.splitStory(minecraft.font, story, 114, 128));
