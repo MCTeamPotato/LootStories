@@ -1,4 +1,4 @@
-package me.kall.lootstories.debug;
+package me.kall.lootstories.common.debug;
 
 import me.kall.lootstories.LootStories;
 import net.minecraft.core.BlockPos;
@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = LootStories.MOD_ID)
 public class DebugEvents {
-    private static final boolean enabled = true;
+    private static final boolean enabled = false;
 
     @SubscribeEvent
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {

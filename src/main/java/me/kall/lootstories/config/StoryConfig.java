@@ -1,13 +1,16 @@
 package me.kall.lootstories.config;
 
 import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.kall.jsonate.api.JsonConfig;
 import me.kall.lootstories.LootStories;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class StoryConfig implements IConfig {
 
@@ -18,8 +21,8 @@ public class StoryConfig implements IConfig {
             .initialize();
 
     private final int bookLootChance = storyConfig.getInt("BookLootPossibility(%)");
-    private final Map<String, Integer> storyWeights = new HashMap<>();
-    private final Map<ResourceLocation, List<String>> boundStoryTitles = new HashMap<>();
+    private final Object2IntMap<String> storyWeights = new Object2IntOpenHashMap<>();
+    private final Map<ResourceLocation, Set<String>> boundStoryTitles = new Object2ObjectOpenHashMap<>();
 
     public StoryConfig() {
         initStoryWeights();
@@ -37,7 +40,7 @@ public class StoryConfig implements IConfig {
     private void initBoundStories() {
         storyConfig.getStream("ChestBindStory", String.class).forEach(entry -> {
             String[] parts = entry.split(";");
-            boundStoryTitles.computeIfAbsent(ResourceLocation.parse(parts[0]), k -> Lists.newArrayList()).add(parts[1]);
+            boundStoryTitles.computeIfAbsent(ResourceLocation.parse(parts[0]), k -> new ObjectOpenHashSet<>()).add(parts[1]);
             LootStories.LOGGER.info("[LootStories] LootTable {} was linked to story {}", parts[0], parts[1]);
         });
     }
@@ -48,12 +51,12 @@ public class StoryConfig implements IConfig {
     }
 
     @Override
-    public Map<String, Integer> storyWeights() {
+    public Object2IntMap<String> storyWeights() {
         return storyWeights;
     }
 
     @Override
-    public Map<ResourceLocation, List<String>> boundStoryTitles() {
+    public Map<ResourceLocation, Set<String>> boundStoryTitles() {
         return boundStoryTitles;
     }
 }

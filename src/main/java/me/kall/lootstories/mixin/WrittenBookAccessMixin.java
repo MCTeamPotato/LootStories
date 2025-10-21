@@ -1,16 +1,10 @@
 package me.kall.lootstories.mixin;
 
 import me.kall.lootstories.LootStories;
-import me.kall.lootstories.data.Story;
-import me.kall.lootstories.util.StorySplit;
-import net.minecraft.client.Minecraft;
+import me.kall.lootstories.common.access.IBookAccess;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -22,66 +16,36 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 
 @Mixin(BookViewScreen.WrittenBookAccess.class)
-public abstract class WrittenBookAccessMixin {
-    @Unique private List<FormattedText> book$storyPages;
+public class WrittenBookAccessMixin implements IBookAccess {
+    @Unique private @Nullable List<FormattedText> story$pages;
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void init(ItemStack book, CallbackInfo ci) {
-        this.story$load(book);
+        LootStories.STORY_MANAGER.loadBookPages(book, this);
     }
 
-    @Unique
-    private void story$load(@NotNull ItemStack book) {
-        CompoundTag tag = book.getTag();
-        if (book.isEmpty() || tag == null || !tag.getBoolean(LootStories.MOD_ID)) return;
+    @Override
+    public @Nullable List<FormattedText> story$pages() {
+        return this.story$pages;
+    }
 
-        if (this.book$storyPages == null) {
-            ResourceLocation key = ResourceLocation.tryParse(tag.getList("pages", Tag.TAG_STRING).getString(0));
-            if (key == null) return;
-
-            Minecraft minecraft = Minecraft.getInstance();
-
-            String lang = minecraft.getLanguageManager().getSelected();
-            List<Story> langStories = LootStories.STORIES.getOrDefault(lang, LootStories.STORIES.getOrDefault("en_us", List.of()));
-            Story story = LootStories.KEY_MANAGER.getStory(key);
-
-            if (!langStories.contains(story)) {
-                Story copy = story;
-                story = langStories.stream().filter(s -> s.info().title().equals(copy.info().title())).findFirst().orElse(story);
-            }
-
-            this.book$storyPages = StorySplit.splitStory(minecraft.font, story, 114, 128)
-                    .stream()
-                    .map(pageList -> {
-                        StringBuilder builder = new StringBuilder();
-                        for (FormattedText text : pageList) {
-                            builder.append(text.getString());
-                        }
-                        return FormattedText.of(builder.toString());
-                    }).toList();
-        }
+    @Override
+    public void story$loadPages(List<FormattedText> pages) {
+        this.story$pages = pages;
     }
 
     @Inject(method = "getPageCount", at = @At("HEAD"), cancellable = true)
-    private void onCountPage(CallbackInfoReturnable<Integer> cir) {
-        if (this.book$storyPages == null) return;
-        cir.setReturnValue(this.book$storyPages.size());
+    private void onPageCount(CallbackInfoReturnable<Integer> cir) {
+        if (this.story$pages == null) return;
+        cir.setReturnValue(this.story$pages.size());
     }
 
     @Inject(method = "getPageRaw", at = @At("HEAD"), cancellable = true)
-    private void onCreatePage(int index, CallbackInfoReturnable<FormattedText> cir) {
-        FormattedText page = this.story$getPage(index);
+    private void onGetPage(int index, CallbackInfoReturnable<FormattedText> cir) {
+        if (this.story$pages == null) return;
+        if (index < 0 || index >= this.story$pages.size()) return;
+        FormattedText page = this.story$pages.get(index);
         if (page == null) return;
         cir.setReturnValue(page);
-    }
-
-    @Unique
-    private @Nullable FormattedText story$getPage(int index) {
-        if (this.book$storyPages == null) return null;
-        try {
-            return this.book$storyPages.get(index);
-        } catch (IndexOutOfBoundsException e) {
-            return null;
-        }
     }
 }

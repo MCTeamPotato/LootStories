@@ -1,13 +1,15 @@
 package me.kall.lootstories.config;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.resources.ResourceLocation;
-import java.util.List;
+
 import java.util.Map;
+import java.util.Set;
 
 public interface IConfig {
     int bookLootChance();
 
-    Map<String, Integer> storyWeights();
+    Object2IntMap<String> storyWeights();
 
-    Map<ResourceLocation, List<String>> boundStoryTitles();
+    Map<ResourceLocation, Set<String>> boundStoryTitles();
 }

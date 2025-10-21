@@ -1,6 +1,7 @@
 {
   "required": true,
   "package": "me.kall.lootstories.mixin",
+  "plugin": "me.kall.lootstories.mixin.MixinExtrasInit",
   "compatibilityLevel": "JAVA_8",
   "overwrites": {
     "conformVisibility": false
@@ -10,7 +11,8 @@
     "WrittenBookAccessMixin"
   ],
   "mixins": [
-    "RandomizableContainerBlockEntityMixin"
+    "RandomizableContainerBlockEntityMixin",
+    "WrittenBookItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1
