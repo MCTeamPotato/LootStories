@@ -1,6 +1,6 @@
 package me.kall.lootstories.mixin;
 
-import com.google.common.collect.Lists;
+import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -11,7 +11,7 @@ import java.util.Set;
 public class MixinExtrasInit implements IMixinConfigPlugin {
     @Override
     public void onLoad(String s) {
-
+        MixinExtrasBootstrap.init();
     }
 
     @Override
