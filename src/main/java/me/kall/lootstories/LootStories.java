@@ -1,9 +1,9 @@
 package me.kall.lootstories;
 
-import me.kall.lootstories.config.Instance;
 import me.kall.lootstories.common.FileManager;
 import me.kall.lootstories.common.StoryManager;
-import net.minecraftforge.fml.common.Mod;
+import me.kall.lootstories.config.Instance;
+import net.neoforged.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

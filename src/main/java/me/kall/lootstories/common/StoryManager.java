@@ -7,6 +7,7 @@ import me.kall.lootstories.common.records.Info;
 import me.kall.lootstories.common.records.Story;
 import me.kall.lootstories.common.util.Splitter;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -14,6 +15,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.behavior.ShufflingList;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -79,8 +81,10 @@ public class StoryManager {
     }
 
     public void loadBookPages(ItemStack book, IBookAccess access) {
-        CompoundTag tag = book.getTag();
-        if (book.isEmpty() || tag == null || !tag.getBoolean(LootStories.MOD_ID)) return;
+        CustomData customData = book.get(DataComponents.CUSTOM_DATA);
+        if (customData == null) return;
+        CompoundTag tag = customData.copyTag();
+        if (book.isEmpty() || !tag.getBoolean(LootStories.MOD_ID)) return;
 
         if (access.story$pages() == null) {
             String basedFile = tag.getList("pages", Tag.TAG_STRING).getString(0);

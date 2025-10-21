@@ -10,18 +10,19 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
-@Mixin(BookViewScreen.WrittenBookAccess.class)
+@Mixin(BookViewScreen.BookAccess.class)
 public class WrittenBookAccessMixin implements IBookAccess {
     @Unique private @Nullable List<FormattedText> story$pages;
 
-    @Inject(method = "<init>", at = @At("RETURN"))
-    private void init(ItemStack book, CallbackInfo ci) {
-        LootStories.STORY_MANAGER.loadBookPages(book, this);
+    @Inject(method = "fromItem", at = @At("RETURN"))
+    private static void init(ItemStack book, CallbackInfoReturnable<BookViewScreen.BookAccess> cir) {
+        IBookAccess access = (IBookAccess) (Object) cir.getReturnValue();
+        if (access == null) return;
+        LootStories.STORY_MANAGER.loadBookPages(book, access);
     }
 
     @Override
@@ -40,7 +41,7 @@ public class WrittenBookAccessMixin implements IBookAccess {
         cir.setReturnValue(this.story$pages.size());
     }
 
-    @Inject(method = "getPageRaw", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getPage", at = @At("HEAD"), cancellable = true)
     private void onGetPage(int index, CallbackInfoReturnable<FormattedText> cir) {
         if (this.story$pages == null) return;
         if (index < 0 || index >= this.story$pages.size()) return;

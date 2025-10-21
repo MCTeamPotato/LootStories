@@ -3,8 +3,8 @@ package me.kall.lootstories.common;
 import me.kall.lootstories.LootStories;
 import me.kall.lootstories.common.records.Info;
 import me.kall.lootstories.common.records.Story;
-import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLPaths;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

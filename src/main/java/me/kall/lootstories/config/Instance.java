@@ -1,7 +1,7 @@
 package me.kall.lootstories.config;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLLoader;
 
 import java.util.Collections;
 import java.util.Map;
