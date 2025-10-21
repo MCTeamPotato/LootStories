@@ -26,6 +26,7 @@ LootStories Configuration Guide (English)
   If author is omitted, defaults to "unknown".
 
 [5] Notes
+- For the same story in different languages, please keep the txt file name the same.
 - Restart the game after editing config.
 - If you delete story files, default stories will be extracted again.
 - You can also extract this mod's jar to get the default stories files.

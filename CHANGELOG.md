@@ -1,2 +1,3 @@
 # 1.3.0
-- For better localization, we no longer read txt file name for title and author, but read the first line inside the txt file.
+- I feel that the codes are toooooo silly so I just rewrote them lol
+- Don't update to this version if your server already works with old ones.
