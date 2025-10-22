@@ -8,6 +8,7 @@ import me.kall.lootstories.common.util.Lang;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WrittenBookItem;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +30,7 @@ public abstract class WrittenBookItemMixin {
         } catch (Throwable ignored) {}
 
         if (story == null) return;
-        cir.setReturnValue(Component.literal(story.info().title()));
+        cir.setReturnValue(new TextComponent(story.info().title()));
     }
 
     @WrapOperation(method = "appendHoverText", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/CompoundTag;getString(Ljava/lang/String;)Ljava/lang/String;"))
