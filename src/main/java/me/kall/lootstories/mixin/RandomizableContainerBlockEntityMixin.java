@@ -30,7 +30,7 @@ public abstract class RandomizableContainerBlockEntityMixin extends BaseContaine
         super(type, pos, blockState);
     }
 
-    @Inject(method = "unpackLootTable", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/storage/loot/LootTable;fill(Lnet/minecraft/world/Container;Lnet/minecraft/world/level/storage/loot/LootParams;J)V", shift = At.Shift.AFTER))
+    @Inject(method = "unpackLootTable", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/storage/loot/LootTable;fill(Lnet/minecraft/world/Container;Lnet/minecraft/world/level/storage/loot/LootContext;)V", shift = At.Shift.AFTER))
     private void onLootFill(Player player, CallbackInfo ci) {
         if (LootStories.STORY_MANAGER.canAddBook()) {
             ItemStack book = Items.WRITTEN_BOOK.getDefaultInstance();

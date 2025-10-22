@@ -47,7 +47,7 @@ public class StoryManager {
         LootStories.CONFIG_INSTANCE.storiesToBind().forEach((lootTable, titles) -> {
             ShufflingList<Story> toBind = new ShufflingList<>();
             titles.forEach(title -> storiesEn.stream().filter(story -> story.info().title().equals(title)).findFirst().ifPresent(story -> toBind.add(story, LootStories.CONFIG_INSTANCE.getWeight(title))));
-            if (toBind.iterator().hasNext()) boundStoriesEn.put(lootTable, toBind);
+            if (toBind.stream().findAny().isPresent()) boundStoriesEn.put(lootTable, toBind);
         });
     }
 
@@ -70,7 +70,7 @@ public class StoryManager {
 
     public Story getStoryForGen(@Nullable ResourceLocation lootTable) {
         ShufflingList<Story> boundToGen = lootTable != null ? boundStoriesEn.get(lootTable) : null;
-        if (boundToGen != null && boundToGen.iterator().hasNext()) return getRandom(boundToGen);
+        if (boundToGen != null && boundToGen.stream().findAny().isPresent()) return getRandom(boundToGen);
         return getRandom(storiesEn);
     }
 
@@ -87,7 +87,7 @@ public class StoryManager {
 
             Minecraft minecraft = Minecraft.getInstance();
 
-            String lang = minecraft.getLanguageManager().getSelected();
+            String lang = minecraft.getLanguageManager().getSelected().getCode();
             Story story = this.storiesByFile.get(basedFile).get(lang);
 
             access.story$loadPages(Splitter.splitStory(minecraft.font, story, 114, 128));

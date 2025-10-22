@@ -21,7 +21,7 @@ public class DebugEvents {
         if (event.getEntity() instanceof ServerPlayer player) {
             player.setGameMode(GameType.SPECTATOR);
             player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, -1));
-            BlockPos pos = player.serverLevel().findNearestMapStructure(StructureTags.EYE_OF_ENDER_LOCATED, player.blockPosition(), 114514, false);
+            BlockPos pos = player.getLevel().findNearestMapStructure(StructureTags.EYE_OF_ENDER_LOCATED, player.blockPosition(), 114514, false);
             if (pos != null) {
                 player.teleportTo(pos.getX(), pos.getY(), pos.getZ());
             }
